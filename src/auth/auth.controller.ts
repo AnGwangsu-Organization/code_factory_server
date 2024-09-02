@@ -27,6 +27,7 @@ import {
   ApiBasicTokenHeader,
   ApiBearerTokenHeader,
 } from '../core/decorator/api-bearer-token-header';
+import { LoginDto } from './dto/login.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -39,7 +40,6 @@ export class AuthController {
   @ApiOperation({
     summary: 'Login하기',
   })
-  @ApiBasicTokenHeader()
   @ApiOkResponse({
     description: 'Access Token과 Refresh Token',
     schema: {
@@ -57,10 +57,9 @@ export class AuthController {
       },
     },
   })
-  @UseGuards(BasicTokenGuard)
   @Post('login')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  async login(@Body() dto: LoginDto) {
+    return this.authService.login(dto);
   }
 
   // @Post('register')

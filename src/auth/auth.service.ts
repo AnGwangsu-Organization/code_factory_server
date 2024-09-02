@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { CacheService } from '../cache/cache.service';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -54,7 +55,17 @@ export class AuthService {
     return user;
   }
 
-  async login(user: User) {
+  async login(dto: LoginDto) {
+    console.log(dto);
+    const { username, password } = dto;
+
+    const user = await this.authenticate(username, password);
+
+    if (!user) {
+      console.log('아이디 또는 비밀번호가 틀림')
+      throw new ForbiddenException('아이디 또는 비밀번호가 틀렸습니다.');
+    }
+
     return {
       refreshToken: this.signToken(user, true),
       accessToken: this.signToken(user, false),
